@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid()) // User ID is a UUID string
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  password  String
+  updatedAt DateTime @updatedAt
+  role      String
+  scores    Score[]
+}
+
+model Score {
+  id        String   @id @default(uuid()) // Score ID is also a UUID string
+  score     Int      @default(0)
+  userId    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
+
+model Blog {
+  id         String   @id @default(uuid())
+  title      String
+  content    String
+  imageUrl   String
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Category {
+  id    String  @id @default(uuid())
+  name  String
+  blogs Blog[]
+}

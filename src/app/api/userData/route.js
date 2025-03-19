@@ -18,7 +18,7 @@ export async function GET(req) {
 
     console.log("Fetching user and scores from database...");
     const userWithScores = await prisma.user.findUnique({
-      where: { email: nam },
+      where: { email: userEmail }, // Corrected variable here
       select: {
         id: true,
         name: true,

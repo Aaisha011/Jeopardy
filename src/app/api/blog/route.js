@@ -18,17 +18,22 @@ export async function POST(req) {
 }
 
 // Fetch blogs or a single blog by ID (GET)
+
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
 
     if (id) {
+      // If your blog id is numeric, uncomment the next line
+      // const numericId = parseInt(id, 10);
       const blog = await prisma.blog.findUnique({
-        where: { id },
+        where: { id: id }, // Replace with { id: numericId } if id is numeric
         include: { category: true },
       });
-      if (!blog) return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+      if (!blog) {
+        return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+      }
       return NextResponse.json(blog, { status: 200 });
     } else {
       const blogs = await prisma.blog.findMany({
@@ -38,6 +43,7 @@ export async function GET(req) {
       return NextResponse.json(blogs, { status: 200 });
     }
   } catch (error) {
+    console.error("Error fetching blogs:", error);
     return NextResponse.json({ error: "Failed to fetch blogs" }, { status: 500 });
   }
 }

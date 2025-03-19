@@ -2,17 +2,18 @@
 import React from 'react';
 import { useRouter } from "next/navigation"; 
 import Link from 'next/link';
+import { signOut} from 'next-auth/react';
 import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 
 export default function Navbar() {
   const router = useRouter();
   
-  const handleLogout = () => {
-    localStorage.removeItem('token'); // Remove token
-    toast.success("User has logged out successfully"); // Display success message
-    console.log("User has logged out successfully"); 
-    router.push("/auth/login"); // Redirect to login page
+  const handleLogout = async () => {
+    // Sign the user out using NextAuth
+    await signOut({ callbackUrl: "/auth/login" });
+    toast.success("User has logged out successfully");
+    console.log("User has logged out successfully");
   };
 
   return (
@@ -33,7 +34,7 @@ export default function Navbar() {
               <Link href={'/auth/blog'}>Blog</Link>
             </li>
             <li className="text-white hover:text-gray-500 cursor-pointer transition-colors">
-              Leaderboard
+              <Link href={'/auth/leaderBoard'}>Leader Board</Link>
             </li>
             <li className="text-white hover:text-gray-500 cursor-pointer transition-colors">
               <Link href={'/auth/user'}>User Dashboard</Link>

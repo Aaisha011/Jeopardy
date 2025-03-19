@@ -60,7 +60,9 @@ export async function POST(req) {
     });
 
     return NextResponse.json({ success: true, message: 'Score submitted successfully!' });
-  } catch (error) {
+    console.log('Score submitted successfully!');
+  } 
+  catch (error) {
     if (error.code === 'P2003') {
       // Foreign key constraint violation
       return NextResponse.json({ success: false, message: 'Foreign key constraint violation: Invalid userId' }, { status: 400 });

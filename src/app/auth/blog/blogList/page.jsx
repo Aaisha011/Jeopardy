@@ -51,7 +51,7 @@ export default function Blogs() {
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 mb-3">
+    <div className="max-w-4xl mx-auto mt-10 mb-3 ">
       <ToastContainer position="top-right" autoClose={3000} />
       <h1 className="text-3xl font-bold mb-4 text-center">Blog List</h1>
       <a href="/auth/blog/createBlog" className="bg-blue-500 text-white px-7 py-2 rounded mb-4 inline-flex items-center">
@@ -61,23 +61,27 @@ export default function Blogs() {
 
       <ul className="mt-4">
         {blogs.map((blog) => (
-          <li key={blog.id} className="border p-4 mt-2 flex justify-between rounded-lg">
-            <div>
-              <h2 className="text-xl font-semibold">{blog.title}</h2>
-              <p className="text-gray-500">{blog.content}</p>
-            </div>
+          <li key={blog.id} className="border p-4 mt-5 flex justify-between rounded-lg bg-white-900/30 shadow-lg shadow-black">
             <img
                   src={blog.imageUrl}
                   alt={blog.title}
-                  className="w-full h-48 object-cover"
+                  className="w-full h-52 object-cover m-7 rounded-md shadow-md shadow-gray-700"
+                  
                 />
+
+            <div className="flex flex-col">
+            <h2 className="text-xl font-semibold">{blog.title}</h2>
+
+            <p className="text-gray-500">{blog.content}</p>
+
             <div className="flex flex-row items-center space-x-2 px-3 py-2">
-                <button onClick={() => editBlog(blog.id)} className="bg-green-500 text-white px-3 py-1 rounded">
+                <button onClick={() => editBlog(blog.id)} className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 active:bg-green-700 cursor-pointer hover:scale-105">
                   Edit
                 </button>
-                <button onClick={() => deleteBlog(blog.id)} className="bg-red-500 text-white px-3 py-1 rounded">
+                <button onClick={() => deleteBlog(blog.id)} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 active:bg-red-700 cursor-pointer hover:scale-105">
                   Delete
                 </button>
+            </div>
             </div>
 
           </li>

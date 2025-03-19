@@ -41,7 +41,7 @@ export async function POST(req) {
         sender: { email: senderEmail }, // Admin as sender
         to: [{ email: email }],  // Send confirmation to the user
         subject: "Thank You for Contacting Us",
-        textContent: `Hi ${name},\n\nThank you for reaching out. We will get back to you soon.\n\nBest Regards,\nYour Company`,
+        textContent: `Hi ${name},\n\nThank you for reaching out. We will get back to you soon.\n\nBest Regards,\nJoapary-quiz-game`,
       },
       {
         headers: {

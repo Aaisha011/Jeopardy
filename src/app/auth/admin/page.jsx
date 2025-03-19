@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabaseClient";
-import { Sun, Moon, Users, LogOut, createLucideIcon } from "lucide-react";
+import { Sun, Moon, createLucideIcon ,Users, FileText, List, PenTool, LogOut} from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import axios from "axios";
 
 export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
@@ -14,28 +15,19 @@ export default function AdminDashboard() {
   
 
   useEffect(() => {
-    
-
-  const fetchUsers = async () => {
-    try {
-      let { data: User, error } = await supabase.from('users').select('*');
-
-      if (error) {
-        console.error("Supabase Error:", error);
-        setError(error.message);
-        return;
+    const fetchUsers = async () => {
+      try{
+        const response = await axios.get("/api/signup");
+        const res = response.data;
+        setUsers(res);
       }
-
-      console.log("Fetched Users:", User);
-      setUsers(User || []);
-    } catch (err) {
-      setError('Unexpected error occurred.');
-      console.error('Unexpected error:', err);
-    }
-  };
+      catch(err){
+        console.error("Error fetching user data:",err);
+      }
+    };
 
   fetchUsers();
-}, []);
+  }, []);
 
 
   const handleLogout = () => {
@@ -54,28 +46,26 @@ export default function AdminDashboard() {
         <ul className="mt-5 space-y-2">
           <li className="px-4 py-2 flex items-center text-white hover:bg-purple-300 cursor-pointer">
             <Users className="mr-2" /> Users List
-          </li>
-
+          </li         >
+        
           <li className="px-4 py-2 flex items-center text-white hover:bg-purple-300 cursor-pointer">
-            <Users className="mr-2" /> 
+            <FileText className="mr-2" /> 
             <Link href={'/auth/blog/category'}>Create Category</Link>
-          </li>
-
+          </li         >
+        
           <li className="px-4 py-2 flex items-center text-white hover:bg-purple-300 cursor-pointer">
-            <Users className="mr-2" /> 
+            <PenTool className="mr-2" /> 
             <Link href={'/auth/blog/createBlog'}>Create Blog</Link>
-          </li>
-
+          </li         >
+        
           <li className="px-4 py-2 flex items-center text-white hover:bg-purple-300 cursor-pointer">
-            <Users className="mr-2" /> 
+            <List className="mr-2" /> 
             <Link href={'/auth/blog/blogList'}>Blog List</Link>
-
-          </li>
-      
+          </li         >
+        
           <li className="mt-92 w-[13vw] py-2 p-3 m-3 rounded-md flex items-center text-white bg-red-700 hover:bg-red-500 active:bg-red-900 cursor-pointer">
             <LogOut className="mr-2" /> <button onClick={handleLogout}>Logout</button>
           </li>
-          
         </ul>
       </div>
 

@@ -25,7 +25,7 @@ export default function BlogList() {
                 <img
                   src={blog.imageUrl}
                   alt={blog.title}
-                  className="w-full h-48 object-cover"
+                  className="w-72 h-52 flex justify-center items-center object-cover"
                 />
                 <div className="p-4">
                   <h2 className="text-xl font-semibold text-gray-800">{blog.title}</h2>

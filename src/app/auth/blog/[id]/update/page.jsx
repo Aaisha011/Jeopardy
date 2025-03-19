@@ -3,9 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import {toast,ToastContainer} from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 
 export default function EditBlog({ params }) {
   const router = useRouter();
@@ -19,9 +18,9 @@ export default function EditBlog({ params }) {
   });
 
   const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState();
+  const [categories, setCategories] = useState([]);
 
-  // Fetch blog details when the page loads
+  // Fetch blog details and categories when the page loads
   useEffect(() => {
     const fetchBlog = async () => {
       try {
@@ -30,7 +29,7 @@ export default function EditBlog({ params }) {
           title: data.title || "",
           content: data.content || "",
           imageUrl: data.imageUrl || "",
-          category: data.category?.name || "",
+          category: data.category?._id || "", // Storing category ID
         });
       } catch (error) {
         console.error("Error fetching blog:", error);
@@ -39,22 +38,19 @@ export default function EditBlog({ params }) {
 
     if (id) fetchBlog();
 
-    // Fetch categories 
-    const fetchCategories = async() =>{
-       try{
-        const response = await axios.get(`/api/category`);
-        const res = response.data;
-        setCategories(res);
-       }
-       catch(err){
-        console.error("Error to fetch categories data");
-       }
-    }
-    fetchCategories();
+    // Fetch categories
+    const fetchCategories = async () => {
+      try {
+        const { data } = await axios.get(`/api/category`);
+        setCategories(data);
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      }
+    };
 
+    fetchCategories();
   }, [id]);
 
-  
   // Handle form changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -78,9 +74,9 @@ export default function EditBlog({ params }) {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <ToastContainer position="top-right" autoClose={3000}/>
-      <h2 className="text-2xl font-bold mb-4">Edit Blog</h2>
+    <div className="max-w-3xl mx-auto p-6 rounded-lg m-32 shadow-lg shadow-black bg-amber-100/30">
+      <ToastContainer position="top-right" autoClose={3000} />
+      <h2 className="text-center text-2xl font-bold mb-4">Edit Blog</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
@@ -108,15 +104,22 @@ export default function EditBlog({ params }) {
           required
           className="w-full p-2 border rounded"
         />
-        <input
-          type="text"
+        {/* Category Dropdown */}
+        <select
           name="category"
-          value={categories}
+          value={formData.category}
           onChange={handleChange}
-          placeholder="Category"
           required
           className="w-full p-2 border rounded"
-        />
+        >
+          <option value="">Select a category</option>
+          {categories.map((cat) => (
+            <option key={cat._id} value={cat._id}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
+
         <button
           type="submit"
           disabled={loading}

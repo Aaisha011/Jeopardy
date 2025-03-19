@@ -18,7 +18,5 @@ export function middleware(req) {
 
 // Protect specific routes
 export const config = {
-  matcher: ["/auth/baord"],
-  matcher: ["/auth/user"],
-  matcher: ["/auth/admin"],
+  matcher: ["/auth/baord","/auth/user","/auth/blog"],
 };

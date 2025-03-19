@@ -8,14 +8,16 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid()) // User ID is a UUID string
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
-  password  String
-  updatedAt DateTime @updatedAt
-  role      String
-  scores    Score[]
+  id               String    @id @default(uuid())
+  email            String    @unique
+  name             String?
+  createdAt        DateTime  @default(now())
+  password         String
+  updatedAt        DateTime  @updatedAt
+  role             String
+  scores           Score[]
+  resetToken       String?   // Add this for reset token
+  resetTokenExpires DateTime? // Add this for token expiry
 }
 
 model Score {

@@ -2,67 +2,78 @@
 
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function Home() {
   const router = useRouter();
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-t from-gray-400 to-purple-500 text-white">
-      {/* Title with Animation */}
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-800 via-purple-600 to-blue-500 text-white p-6">
+      {/* Header Section */}
       <motion.h1
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="text-6xl font-extrabold mb-4 text-center"
+        className="text-5xl md:text-6xl font-extrabold mb-6 text-center drop-shadow-lg"
       >
-        Welcome to <span className="text-gray-700">Jeopardy!</span>
+        Welcome to <span className="text-yellow-400">Jeopardy!</span>
       </motion.h1>
 
-      {/* Subtitle with Fade-in Effect */}
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.2 }}
-        className="text-lg text-gray-200 mb-8 text-center px-6"
+        className="text-lg md:text-xl text-gray-300 mb-10 text-center px-6 max-w-2xl"
       >
-        Test your knowledge and challenge yourself in this exciting quiz game.
+        Test your knowledge and challenge yourself in this exciting quiz game. Play, learn, and compete!
       </motion.p>
 
-      {/* Animated Buttons Container */}
+      {/* Buttons Section */}
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.5 }}
-        className="flex space-x-4"
+        className="grid grid-cols-1 md:grid-cols-2 gap-6"
       >
-        <div className="flex justify-around gap-12">
         <button
           onClick={() => router.push("/auth/signup")}
-          className="px-9 py-5 bg-blue-500  text-white hover:bg-blue-700 font-semibold rounded-lg transition transform hover:scale-110"
+          className="px-10 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-full shadow-lg hover:from-blue-700 hover:to-indigo-800 transition transform hover:scale-105"
         >
           Sign Up
         </button>
 
         <button
           onClick={() => router.push("/auth/login")}
-          className="px-9 py-5 bg-blue-500 text-white hover:bg-blue-700 font-semibold rounded-lg transition transform hover:scale-110"
+          className="px-10 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-full shadow-lg hover:from-blue-700 hover:to-indigo-800 transition transform hover:scale-105"
         >
           Login
         </button>
-        </div>
       </motion.div>
-      
 
-      {/* Play Now Button with Bounce Effect */}
-      {/* <motion.button
-        onClick={() => router.push("/dashboard")}
-        initial={{ y: 10 }}
-        animate={{ y: [10, -5, 10] }}
-        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-        className="mt-6 px-8 py-4 bg-white text-blue-400 text-lg font-bold rounded-lg hover:bg-blue-500 hover:text-white transition transform hover:scale-110"
-      >
-        Play Now
-      </motion.button> */}
+      {/* Blog and Contact Sections */}
+      <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-6xl">
+        {/* Blog Section */}
+        <div className="bg-gray-900 p-6 rounded-lg shadow-lg">
+          <h2 className="text-2xl font-bold text-yellow-400 mb-3">Latest from Our Blog</h2>
+          <p className="text-gray-300 mb-4">Stay updated with the latest news, tips, and insights about the Jeopardy world. Explore interesting articles and sharpen your knowledge.</p>
+          <Link href="/auth/blog">
+            <button className="px-8 py-3 bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold rounded-full shadow-lg hover:from-green-600 hover:to-green-800 transition transform hover:scale-105">
+              Read Blog
+            </button>
+          </Link>
+        </div>
+
+        {/* Contact Us Section */}
+        <div className="bg-gray-900 p-6 rounded-lg shadow-lg">
+          <h2 className="text-2xl font-bold text-red-400 mb-3">Get in Touch</h2>
+          <p className="text-gray-300 mb-4">Have questions or need assistance? Contact our team for support and inquiries. We’d love to hear from you!</p>
+          <Link href="/auth/contactForm">
+            <button className="px-8 py-3 bg-gradient-to-r from-red-400 to-red-600 text-white font-semibold rounded-full shadow-lg hover:from-red-600 hover:to-red-800 transition transform hover:scale-105">
+              Contact Us
+            </button>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

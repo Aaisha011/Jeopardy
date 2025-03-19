@@ -8,42 +8,64 @@ export default function UserDashboard() {
   const [user, setUser] = useState(null);
   const [scores, setScores] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { data: session, status } = useSession();
 
   useEffect(() => {
     if (status === "authenticated") {
       fetchUserData();
-      fetchLeaderboard();
+      fetchUserScore();
+      fetchLeaderBoard();
     }
   }, [status]);
-
+   
+  // Fetch user data
   const fetchUserData = async () => {
     try {
       const response = await axios.get("/api/userData", {
         headers: { Authorization: `Bearer ${session?.accessToken}` },
       });
-
+  
       setUser(response.data.user);
-      setScores(response.data.scores);
-    } catch (error) {
+    } 
+    catch (error) {
       console.error("Error fetching user data:", error);
-    } finally {
+    } 
+    finally {
+      setLoading(false);
+    }
+  };
+  
+  // fetch user score
+  const fetchUserScore = async () => {
+    try {
+      const response = await axios.get("/api/scores", {
+        headers: { Authorization: `Bearer ${session?.accessToken}` },
+      });
+  
+      setScores(response.data.user.scores.map(score => score.score)); // Extract scores
+    }
+    catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+    finally {
       setLoading(false);
     }
   };
 
-  const fetchLeaderboard = async () => {
-    try {
-      const response = await axios.get("/api/leaderboard");
-      const sortedLeaderboard = response.data.sort((a, b) => a.score - b.score); // Sort in ascending order
-      setLeaderboard(sortedLeaderboard);
-    } catch (error) {
-      console.error("Error fetching leaderboard:", error);
+  // fetch leaderboard data
+  const fetchLeaderBoard = async() =>{
+    try{
+      const response = await axios.get("/api/leaderBoard");
+      const res = response.data;
+      setLeaderboard(res);
     }
-  };
-
+    catch(err){
+      console.error("Error fetching leaderBoard data");
+    }
+  }
+  
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-t from-gray-300 to-purple-600">
@@ -52,11 +74,18 @@ export default function UserDashboard() {
     );
   }
 
+  const handleLogout = async() =>{
+    await signOut();
+    router.push('/auth/login'); 
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-t from-gray-300 to-purple-600 flex flex-col items-center py-8 px-4">
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md mb-8 text-center">
         <h2 className="text-2xl font-bold text-black">Welcome, {user?.name || "Guest"}!</h2>
-        <p className="text-lg text-gray-700"><strong>Email:</strong> {user?.email || "Not available"}</p>
+        <p className="text-lg text-gray-700">
+          <strong>Email:</strong> {user?.email || "Not available"}
+        </p>
       </div>
 
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md mb-8">
@@ -109,7 +138,7 @@ export default function UserDashboard() {
           Replay Game
         </button>
         <button
-          onClick={async () => { await signOut(); router.push("/auth/login"); }}
+          onClick={handleLogout}
           className="bg-red-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-600 transition-all"
         >
           Logout

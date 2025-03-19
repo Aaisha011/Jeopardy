@@ -2,45 +2,44 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios"; // For fetching user details and scores
+import axios from "axios"; 
+import { signOut } from "next-auth/react";
+import { toast, ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 export default function UserDashboard() {
-  const [user, setUser] = useState(null); // To store user details (name, email)
-  const [scores, setScores] = useState([]); // To store user's scores
-  const [loading, setLoading] = useState(true); // For handling loading state
+  const [user, setUser] = useState(null); 
+  const [scores, setScores] = useState([]); 
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   // Fetch user profile and scores on component mount
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const userResponse = await axios.get("/api/userData"); // Replace with your user endpoint
-        const scoresResponse = await axios.get("/api/scores"); // Replace with your scores endpoint
-        setUser(userResponse.data);
-        console.log(userResponse.data);
-
-        setScores(scoresResponse.data);
-        console.log(scoresResponse.data);
-
-        setLoading(false);
+        const response = await axios.get("/api/userData", {
+          headers: { Authorization: `Bearer ${session?.accessToken}` },
+        });
+    
+        setUser(response.data.user);
+        // setScores(response.data.user.scores.map(score => score.score)); // Extract scores
       } catch (error) {
         console.error("Error fetching user data:", error);
+      } finally {
         setLoading(false);
       }
     };
-
+    
     fetchUserData();
   }, []);
 
   // Handle Logout
-  const handleLogout = async () => {
-    try {
-      await axios.post("/api/logout"); // Replace with your logout endpoint
-      router.push("/login"); // Redirect to login page
-    } catch (error) {
-      console.error("Error logging out:", error);
-    }
-  };
+  const handleLogout = () => {
+      localStorage.removeItem('token'); 
+      toast.success("User has logged out successfully"); 
+      console.log("User has logged out successfully"); 
+      router.push("/auth/login"); 
+    };
 
   // Handle Replay
   const handleReplay = () => {

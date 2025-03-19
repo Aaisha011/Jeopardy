@@ -9,8 +9,6 @@ import { Mail, Lock } from "lucide-react";
 import axios from "axios";
 import { useRouter } from "next/navigation"; 
 import { signIn, getSession } from "next-auth/react";
-// import { signIn, useSession } from "next-auth/react";
-
 
 export default function LoginForm() {
   const [message, setMessage] = useState("");
@@ -24,47 +22,6 @@ export default function LoginForm() {
     resolver: zodResolver(loginSchema),
   });
 
-
-  // const handleGoogleLogin = () => {
-  //     signIn("google", { callbackUrl: "/auth/board" });   
-  //     console.log("Google login clicked"); 
-  // };
-  
-  
-  
-  // const onSubmit = async (User) => {
-  //   try {
-  //     console.log("Submitting User:", User);
-  
-  //     // Make the login request to the backend
-  //     const response = await axios.post("/api/login", User);
-  //     console.log("API Response:", response.data);
-  
-  //     // Display success message
-  //     setMessage(response.data.message);
-  
-  //     // Store token securely
-  //     const token = response.data.token; // Get token from the response
-  //     localStorage.setItem("token", token); // Store token in localStorage
-  //     console.log("Token stored in localStorage:", token);
-  
-  //     // Redirect based on user role
-  //     const userRole = response.data.user.role;
-  //     if (userRole === "admin") {
-  //       router.push("/auth/admin"); // Redirect to admin dashboard
-  //     } else {
-  //       router.push("/auth/board"); // Redirect to user board
-  //     }
-  //   } catch (error) {
-  //     console.error("Error during login:", error.response?.data || error.message || error);
-    
-  //     // Set a fallback error message
-  //     setMessage(
-  //       error.response?.data?.message || "Something went wrong. Please try again."
-  //     );
-  //   }
-  // };
-
   const onSubmit = async (data) => {
     try {
       const result = await signIn('credentials', {
@@ -72,40 +29,47 @@ export default function LoginForm() {
         email: data.email,
         password: data.password,
       });
-  
-      if (result?.ok) {
-        // Wait for session to update before fetching it
-        await new Promise(resolve => setTimeout(resolve, 1000)); 
-        
-        const session = await getSession();
-        console.log("Session data:", session);  // Debugging
-        
-        const id = session?.user?.id;  // Ensure id exists
-        console.log("User ID:", id); 
-  
-        const role = session?.user?.role;  // Ensure role exists
-        console.log("User Role:", role); 
-  
-        let redirectUrl = '/auth/board';
-        if (role === 'admin') {
-          redirectUrl = '/auth/admin';
-        }
-  
-        router.push(redirectUrl);
-      } else {
-        console.error('Sign-in error', result?.error);
+      
+      // If signIn returned an error, show it
+      if (result?.error) {
+        setMessage(result.error);
+        return;
       }
+
+      // Wait for the session to update
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      const session = await getSession();
+
+      if (!session || !session.user) {
+        setMessage("Session not found. Please try again.");
+        return;
+      }
+
+      console.log("Session data:", session);
+      
+      const id = session.user.id; // Make sure your NextAuth callbacks include this field
+      const role = session.user.role; // Ensure that the role is added via callbacks
+
+      console.log("User ID:", id);
+      console.log("User Role:", role);
+
+      let redirectUrl = '/auth/board';
+      if (role === 'admin') {
+        redirectUrl = '/auth/admin';
+      }
+
+      router.push(redirectUrl);
     } catch (error) {
-      console.error('Error signing in', error);
+      console.error('Error signing in:', error);
+      setMessage("An error occurred during sign in. Please try again.");
     }
   };
-  
+
   return (
     <div className="flex min-h-screen min-w-screen text-black items-center justify-center bg-gradient-to-r from-gray-300 to-purple-600">
-      <div className="w-full max-w-md p-8  bg-opacity-10 backdrop-blur-lg rounded-2xl border-2 border-white/30 shadow-lg shadow-gray-300">
+      <div className="w-full max-w-md p-8 bg-opacity-10 backdrop-blur-lg rounded-2xl border-2 border-white/30 shadow-lg shadow-gray-300">
         <h2 className="text-white text-3xl font-semibold text-center mb-6">Login to Jeopardy</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-          
           <div className="relative">
             <Mail className="absolute left-3 top-3 text-black opacity-75" size={20} />
             <input
@@ -126,6 +90,10 @@ export default function LoginForm() {
             />
             {errors.password && <p className="text-red-700 text-sm mt-1">{errors.password.message}</p>}
           </div>
+          
+          <div className="text-right text-blue-700 hover:text-blue-500">
+            <Link href={'/auth/password/forgotPassword'}>Forgot password</Link>
+          </div>
 
           <button 
             type="submit" 
@@ -133,19 +101,7 @@ export default function LoginForm() {
           >
             Login
           </button>
-          {/* <p className="text-center text-white">OR</p> */}
-
         </form>
-        {/* Google Login Button */}
-        {/* <div className="text-center mt-4">
-          <button 
-            onClick={handleGoogleLogin}
-            className="flex items-center justify-center w-full bg-white text-black font-medium py-3 rounded-lg shadow-md hover:bg-blue-500 hover:text-white transition-transform transform hover:scale-105"
-          >
-            <img src="/google.png" alt="Google" className="w-5 h-5 mr-2" />
-            Sign in with Google
-          </button>
-        </div> */}
 
         <p className="mt-4 text-white text-center">
           Don't have an account?{" "}
@@ -155,11 +111,7 @@ export default function LoginForm() {
         </p>
 
         {message && (
-          <p
-            className={`mt-2 text-center ${
-              message === "error.message" ? "text-red-700" : "text-green-700"
-            }`}
-          >
+          <p className={`mt-2 text-center ${message === "error.message" ? "text-red-700" : "text-green-700"}`}>
             {message}
           </p>
         )}

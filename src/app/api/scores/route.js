@@ -1,31 +1,3 @@
-// import { NextResponse } from "next/server";
-// import { PrismaClient } from "@prisma/client";
-
-// const prisma = new PrismaClient();
-
-
-// export async function POST(req) {
-//   try {
-//     const { userId, score } = await req.json();
-
-//     // Validate userId
-//     if (!userId) {
-//       return NextResponse.json({ success: false, error: "User ID is required." }, { status: 400 });
-//     }
-
-//     // TODO: Validate user existence in database
-//     const userExists = true; // Replace with actual DB check
-//     if (!userExists) {
-//       return NextResponse.json({ success: false, error: "User does not exist. Please provide a valid userId." }, { status: 404 });
-//     }
-
-//     // Simulate saving score
-//     return NextResponse.json({ success: true, message: "Score submitted successfully!" }, { status: 200 });
-
-//   } catch (error) {
-//     return NextResponse.json({ success: false, error: "Server error" }, { status: 500 });
-//   }
-// }
 import { PrismaClient } from '@prisma/client';
 import { NextResponse } from 'next/server';
 
@@ -71,3 +43,63 @@ export async function POST(req) {
     return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
   }
 }
+
+
+
+
+// GET: Fetch all users with their total scores
+
+export async function GET(req) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get("userId");
+
+    if (!userId) {
+      return NextResponse.json({ success: false, message: "User ID is required" }, { status: 400 });
+    }
+
+    console.log("Fetching total score for user:", userId);
+
+    const userWithScores = await prisma.user.findUnique({
+      where: { id: userId }, // Ensure ID type matches DB schema
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        scores: {
+          select: { score: true },
+        },
+      },
+    });
+
+    if (!userWithScores) {
+      return NextResponse.json(
+        { success: false, message: "User not found" },
+        { status: 404 }
+      );
+    }
+
+    // Calculate total score
+    const totalScore = userWithScores.scores.reduce((sum, entry) => sum + entry.score, 0);
+
+    return NextResponse.json(
+      {
+        success: true,
+        user: {
+          id: userWithScores.id,
+          name: userWithScores.name,
+          email: userWithScores.email,
+          totalScore,
+        },
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error fetching user scores:", error);
+    return NextResponse.json(
+      { success: false, message: "Server error", details: error.message },
+      { status: 500 }
+    );
+  }
+}
+

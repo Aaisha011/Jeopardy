@@ -10,35 +10,53 @@ export default function UserDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [user, setUser] = useState(null);
-  const [scores, setScores] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [totalScore, setTotalScore] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // If session is loaded and there's no session, redirect to login.
-    if (status !== "loading" && !session) {
+    if (status === "loading") return; // Wait for session to be ready
+
+    if (!session || !session.user?.id) {
       router.push("/auth/login");
       return;
     }
-    // If session exists, fetch user data and scores
-    if (session && session.accessToken) {
-      const fetchUserData = async () => {
-        try {
-          const response = await axios.get("/api/userData", {
-            headers: { Authorization: `Bearer ${session.accessToken}` },
-          });
-          setUser(response.data.user);
-          setScores(response.data.scores); // Fetch and set scores from API
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchUserData();
-    }
+
+    fetchUserData();
+    fetchUserScore();
   }, [session, status, router]);
 
-  // Handle Logout using NextAuth signOut
+  // Fetch user data
+  const fetchUserData = async () => {
+    try {
+      const response = await axios.get(`/api/userData`, {
+        headers: { Authorization: `Bearer ${session.accessToken}` },
+      });
+      setUser(response.data.user);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch user scores
+  const fetchUserScore = async () => {
+    try {
+      const response = await axios.get(`/api/scores?userId=${session?.user?.id}`, {
+        headers: { Authorization: `Bearer ${session?.accessToken}` },
+      });
+
+      if (response.data.success) {
+        setTotalScore(response.data.user.totalScore || 0);
+      } else {
+        console.error("Error fetching scores:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching user scores:", error);
+    }
+  };
+
+  // Handle Logout
   const handleLogout = async () => {
     await signOut({ callbackUrl: "/auth/login" });
     toast.success("User has logged out successfully");
@@ -46,7 +64,7 @@ export default function UserDashboard() {
 
   // Handle Replay
   const handleReplay = () => {
-    router.push("/auth/board"); // Redirect to the quiz game
+    router.push("/auth/board");
   };
 
   if (loading || status === "loading") {
@@ -71,20 +89,10 @@ export default function UserDashboard() {
 
       {/* Scores Section */}
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md mb-8">
-        <h3 className="text-xl font-bold mb-4">Your Scores</h3>
-        {scores.length > 0 ? (
-          <ul className="list-disc list-inside">
-            {scores.map((score, index) => (
-              <li key={index} className="text-gray-700">
-                <strong>Quiz {index + 1}:</strong> {score} points
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-700">
-            No scores available yet. Play a game to see your scores!
-          </p>
-        )}
+        <h3 className="text-xl font-bold mb-4">Your Total Score</h3>
+        <p className="text-gray-700 text-lg font-semibold">
+          {totalScore > 0 ? `${totalScore} points` : "No scores available yet. Play a game to see your score!"}
+        </p>
       </div>
 
       {/* Action Buttons */}

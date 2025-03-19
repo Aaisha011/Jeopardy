@@ -5,21 +5,26 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    // Fetch all users' scores in descending order
-    const scores = await prisma.score.findMany({
-      include: {
-        user: {
-          select: { name: true }, // Fetch only the user's name
-        },
-      },
-      orderBy: { score: "desc" }, // Sort scores in descending order
+    // Fetch total scores for each user, sorted in descending order
+    const scores = await prisma.score.groupBy({
+      by: ["userId"],
+      _sum: { score: true },
+      orderBy: { _sum: { score: "desc" } }, // Sort by total score
     });
 
-    // Assign ranks based on sorted order
+    // Fetch user names for the leaderboard
+    const users = await prisma.user.findMany({
+      where: {
+        id: { in: scores.map((s) => s.userId) },
+      },
+      select: { id: true, name: true },
+    });
+
+    // Map user names with total scores and assign ranks
     const leaderboard = scores.map((entry, index) => ({
-      rank: index + 1, // Rank starts from 1
-      name: entry.user.name,
-      score: entry.score,
+      rank: index + 1, // Assign rank
+      name: users.find((user) => user.id === entry.userId)?.name || "Unknown",
+      totalScore: entry._sum.score,
     }));
 
     return NextResponse.json({ success: true, leaderboard }, { status: 200 });

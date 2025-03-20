@@ -8,41 +8,57 @@ datasource db {
 }
 
 model User {
-  id               String    @id @default(uuid())
-  email            String    @unique
-  name             String?
-  createdAt        DateTime  @default(now())
-  password         String
-  updatedAt        DateTime  @updatedAt
-  role             String
-  scores           Score[]
-  resetToken       String?   // Add this for reset token
-  resetTokenExpires DateTime? // Add this for token expiry
+  id                String    @id @default(uuid())
+  email             String    @unique
+  name              String?
+  createdAt         DateTime  @default(now())
+  password          String
+  updatedAt         DateTime  @updatedAt
+  role              String
+  resetToken        String?
+  resetTokenExpires DateTime?
+  scores            Score[]
 }
 
 model Score {
-  id        String   @id @default(uuid()) // Score ID is also a UUID string
+  id        String   @id @default(uuid())
   score     Int      @default(0)
   userId    String
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-
-
 model Blog {
   id         String   @id @default(uuid())
   title      String
   content    String
-  imageUrl   String
-  category   Category @relation(fields: [categoryId], references: [id])
   categoryId String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  imageUrl   String
+  category   Category @relation(fields: [categoryId], references: [id])
 }
 
 model Category {
-  id    String  @id @default(uuid())
+  id    String @id
   name  String
   blogs Blog[]
+}
+
+model Question {
+  id         String           @id @default(uuid())
+  categoryId String
+  question   String
+  options    String[]
+  correctAns String
+  points     Int
+  createdAt  DateTime         @default(now())
+  category   questionCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+}
+
+model questionCategory {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  createdAt DateTime   @default(now())
+  questions Question[]
 }

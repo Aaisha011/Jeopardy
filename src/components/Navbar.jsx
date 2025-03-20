@@ -34,7 +34,7 @@ export default function Navbar() {
               <Link href={'/auth/blog'}>Blog</Link>
             </li>
             <li className="text-white hover:text-gray-500 cursor-pointer transition-colors">
-              <Link href={'/auth/leaderBoard'}>Leader Board</Link>
+              <Link href={'/auth/leaderBoard'}>Leaderboard</Link>
             </li>
             <li className="text-white hover:text-gray-500 cursor-pointer transition-colors">
               <Link href={'/auth/user'}>User Dashboard</Link>

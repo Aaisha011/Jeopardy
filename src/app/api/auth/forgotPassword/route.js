@@ -1,6 +1,5 @@
 import prisma from "@/lib/prisma";
-import crypto from "crypto";
-import nodemailer from "nodemailer";
+import bcrypt from "bcrypt";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
@@ -14,8 +13,9 @@ export async function POST(request) {
     }
 
     // Generate reset token
-    const resetToken = crypto.randomBytes(32).toString("hex");
-    const resetTokenHash = crypto.createHash("sha256").update(resetToken).digest("hex");
+    const resetToken = Math.random().toString(36).substr(2, 10);
+    const salt = await bcrypt.genSalt(10);
+    const resetTokenHash = await bcrypt.hash(resetToken, salt);
     const expires = new Date(Date.now() + 3600000); // 1 hour
 
     // Update user with reset token and expiry
@@ -24,31 +24,28 @@ export async function POST(request) {
       data: { resetToken: resetTokenHash, resetTokenExpires: expires },
     });
 
-    // Nodemailer transporter setup
-    const transporter = nodemailer.createTransport({
-      host: 'smtp-relay.brevo.com',
-      port: 587,
-      secure: false, // False for 587, true for 465
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-      tls: {
-        rejectUnauthorized: true, // Enforce TLS
-      },
-    });
-
     // Construct reset link
-    const resetLink = `${process.env.NEXT_PUBLIC_BASE_URL}/resetPassword?token=${resetToken}&email=${email}`;
+    const resetLink = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/password/resetPassword?token=${resetToken}&email=${email}`;
     console.log("Generated Reset Link:", resetLink);
 
-    // Send email
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "Password Reset Request",
-      text: `Click this link to reset your password: ${resetLink}`,
+    // Send email using Brevo API
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "api-key": process.env.BREVO_API_KEY,
+      },
+      body: JSON.stringify({
+        sender: { email: process.env.BREVO_EMAIL, name: "Your App Name" },
+        to: [{ email }],
+        subject: "Password Reset Request",
+        htmlContent: `<p>Click this link to reset your password: <a href="${resetLink}">${resetLink}</a></p>`
+      }),
     });
+
+    if (!response.ok) {
+      throw new Error("Failed to send email");
+    }
 
     return NextResponse.json({ message: "Reset link sent to your email" }, { status: 200 });
   } catch (error) {

@@ -1,28 +1,31 @@
 import prisma from "@/lib/prisma";
-import crypto from "crypto";
 import bcrypt from "bcryptjs";
 
 export async function POST(request) {
-  const { email, token, password } = await request.json();
-
   try {
-    const resetTokenHash = crypto
-      .createHash("sha256")
-      .update(token)
-      .digest("hex");
+    const { email, token, password } = await request.json();
 
-    // Check if token is valid
+    // Fetch user with valid reset token
     const user = await prisma.user.findFirst({
       where: {
         email,
-        resetToken: resetTokenHash,
-        resetTokenExpires: { gt: new Date() }, // Check if token hasn't expired
+        resetToken: { not: null }, // Ensure token exists
+        resetTokenExpires: { gt: new Date() }, // Ensure token is not expired
       },
     });
 
     if (!user) {
       return new Response(
-        JSON.stringify({ message: "Invalid or expired token" }),
+        JSON.stringify({ message: "Invalid or expired reset token" }),
+        { status: 400 }
+      );
+    }
+
+    // Validate token
+    const isTokenValid = await bcrypt.compare(token, user.resetToken);
+    if (!isTokenValid) {
+      return new Response(
+        JSON.stringify({ message: "Invalid reset token" }),
         { status: 400 }
       );
     }
@@ -30,11 +33,18 @@ export async function POST(request) {
     // Hash new password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Update password and clear reset token
+    // Update only the password first
     await prisma.user.update({
       where: { email },
       data: {
         password: hashedPassword,
+      },
+    });
+
+    // Then clear reset token (ensure previous update works)
+    await prisma.user.update({
+      where: { email },
+      data: {
         resetToken: null,
         resetTokenExpires: null,
       },
@@ -45,9 +55,10 @@ export async function POST(request) {
       { status: 200 }
     );
   } catch (error) {
-    console.error(error);
-    return new Response(JSON.stringify({ message: "Server error" }), {
-      status: 500,
-    });
+    console.error("Error resetting password:", error);
+    return new Response(
+      JSON.stringify({ message: "Server error", error: error.message }),
+      { status: 500 }
+    );
   }
 }

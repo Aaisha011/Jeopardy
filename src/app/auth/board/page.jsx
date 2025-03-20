@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
-import questions from "@/app/api/questions/route";
+import questions from "@/app/api/questions/question/route";
 import { useRouter } from "next/navigation";
 import { getSession } from "next-auth/react";
 import Navbar from "@/components/Navbar";

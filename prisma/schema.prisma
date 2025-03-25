@@ -18,6 +18,9 @@ model User {
   resetToken        String?
   resetTokenExpires DateTime?
   scores            Score[]
+  subscriptionType  String    @default("free")     // free, 1month, 6months, lifetime
+  subscriptionEnd   DateTime?                      // Nullable for free/lifetime users
+  cartItems         CartItem[]                    // Relation to cart
 }
 
 model Score {
@@ -26,6 +29,44 @@ model Score {
   userId    String
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model productCategory {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  // description String?   // Keeping this optional field from earlier
+  products    Product[] // One-to-many relation with Product
+}
+
+model Product {
+  id            String          @id @default(uuid())
+  name          String
+  description   String?
+  type          String          // physical, digital
+  basicPrice    Int             // Price for basic access (e.g., one-time purchase)
+  oneMonth      Int             // Price for 1-month access
+  sixMonth      Int             // Price for 6-month access
+  lifeTime      Int             // Price for lifetime access
+  imageUrl      String          // URL of the image in Supabase Storage
+  categoryId    String          // Foreign key to productCategory
+  category      productCategory @relation(fields: [categoryId], references: [id])
+  cartItems     CartItem[]      // One-to-many relation with CartItem
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  userId    String
+  productId String
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+}
+
+model SubscriptionPricing {
+  id              String  @id @default(uuid())
+  subscriptionType String  @unique
+  monthlyCost     Int
 }
 
 model Blog {

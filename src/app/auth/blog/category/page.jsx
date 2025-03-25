@@ -55,7 +55,7 @@ export default function CategoryComponent() {
     }
 
     try {
-      await axios.delete("/api/category/delete", { data: { id } }); // API call to delete category
+      await axios.delete(`/api/category`, { data: { id } }); // API call to delete category
       setCategories(categories.filter((category) => category.id !== id)); // Update state
       alert("Category deleted successfully!");
     } catch (error) {
@@ -65,8 +65,9 @@ export default function CategoryComponent() {
   };
 
   return (
-    <div className="p-4 max-w-md mx-auto bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Manage Categories</h2>
+    <div className="flex items-center h-screen bg-gradient-to-r from-purple-600 to-purple-300">
+      <div className="max-w-md mx-auto bg-white shadow-lg rounded-lg p-7">
+      <h2 className="text-2xl font-bold mb-4 text-purple-900 text-center">Manage Blog Categories</h2>
 
       {/* Create Category Form */}
       <form onSubmit={handleCreateCategory} className="mb-6">
@@ -75,12 +76,12 @@ export default function CategoryComponent() {
           placeholder="Enter category name"
           value={newCategory}
           onChange={(e) => setNewCategory(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded-lg mb-4"
+          className="w-full p-2 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-purple-500 focus:outline-none"
         />
         <button
           type="submit"
           disabled={isLoading}
-          className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition disabled:opacity-50"
+          className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 cursor-pointer transition disabled:opacity-50"
         >
           {isLoading ? "Creating..." : "Create Category"}
         </button>
@@ -109,5 +110,7 @@ export default function CategoryComponent() {
         <p className="text-gray-500 mt-4">No categories found.</p>
       )}
     </div>
+    </div>
+
   );
 }

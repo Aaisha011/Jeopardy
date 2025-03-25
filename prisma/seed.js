@@ -9,16 +9,16 @@ async function main() {
         { name: "Literature" },
     ];
 
-    // Step 1: Insert categories
-    const createdCategories = await Promise.all(
-        categories.map((category) => prisma.questionCategory.create({ data: category }))
-    );
-
-    // Mapping category names to their IDs
+    // Step 1: Insert or update categories and get their IDs
     const categoryMap = {};
-    createdCategories.forEach((category) => {
-        categoryMap[category.name] = category.id;
-    });
+    for (const category of categories) {
+        const createdOrUpdatedCategory = await prisma.questionCategory.upsert({
+            where: { name: category.name }, // Check by unique name
+            update: {}, // No updates needed if it exists
+            create: { name: category.name }, // Create if it doesn’t exist
+        });
+        categoryMap[category.name] = createdOrUpdatedCategory.id;
+    }
 
     const questions = [
         {
@@ -97,15 +97,25 @@ async function main() {
         for (const questionData of categoryData.questions) {
             await prisma.question.create({
                 data: {
-                    categoryId: categoryMap[categoryData.category], // Assign correct category ID
+                    categoryId: categoryMap[categoryData.category],
                     question: questionData.question,
                     options: questionData.options,
                     correctAns: questionData.answer,
-                    points: questionData.value, // Using 'value' as 'points'
+                    points: questionData.value,
                 },
             });
         }
     }
+
+    // Step 3: Insert SubscriptionPricing data
+    await prisma.subscriptionPricing.createMany({
+        data: [
+            { subscriptionType: "1month", monthlyCost: 10 },
+            { subscriptionType: "6months", monthlyCost: 50 },
+            { subscriptionType: "lifetime", monthlyCost: 200 },
+        ],
+        skipDuplicates: true,
+    });
 
     console.log("Seeding completed successfully!");
 }

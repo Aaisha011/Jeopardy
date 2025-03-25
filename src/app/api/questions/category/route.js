@@ -1,38 +1,35 @@
-import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
-// create category
-export async function POST(req) {
+//  GET: Fetch all categories
+export async function GET() {
     try {
-      const { name } = await req.json();
-  
-      if (!name) {
-        return NextResponse.json({ error: "Category name is required" }, { status: 400 });
-      }
-  
-      const category = await prisma.category.create({
-        data: { name },
-      });
-  
-      return NextResponse.json(category, { status: 201 });
+        const categories = await prisma.questionCategory.findMany();
+        return NextResponse.json({ success: true, data: categories }, { status: 200 });
     } catch (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ success: false, message: error.message }, { status: 500 });
     }
-  }
+}
 
-//   get all category
-  export async function GET() {
+//  PUT: Update a category
+export async function PUT(req) {
     try {
-      const categories = await prisma.category.findMany({
-        select: { id: true, name: true },
-      });
-  
-      return NextResponse.json(categories, { status: 200 });
+        const body = await req.json();
+        const { id, name } = body;
+
+        if (!id) {
+            return NextResponse.json({ success: false, message: "Category ID is required" }, { status: 400 });
+        }
+
+        const updatedCategory = await prisma.questionCategory.update({
+            where: { id },
+            data: { name },
+        });
+
+        return NextResponse.json({ success: true, data: updatedCategory }, { status: 200 });
     } catch (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ success: false, message: error.message }, { status: 500 });
     }
-  }
-  
-  
+}

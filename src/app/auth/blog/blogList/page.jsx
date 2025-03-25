@@ -51,17 +51,17 @@ export default function Blogs() {
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 mb-3 ">
+    <div className="  bg-gradient-to-r from-purple-600 to-purple-300">
       <ToastContainer position="top-right" autoClose={3000} />
-      <h1 className="text-3xl font-bold mb-4 text-center">Blog List</h1>
-      <a href="/auth/blog/createBlog" className="bg-blue-500 text-white px-7 py-2 rounded mb-4 inline-flex items-center">
-        <Plus className="text-white mr-2" />
+      <h1 className="text-3xl font-bold mb-4 p-7 text-center text-white">Blog List</h1>
+      <a href="/auth/blog/createBlog" className="bg-blue-500 text-white px-7 py-2 rounded p-3 ml-5 inline-flex items-center">
+        <Plus className="text-white mr-2 o-5" />
         Create Blog
-        </a>
+      </a>
 
-      <ul className="mt-4">
+      <ul className="mt-4 p-5 ">
         {blogs.map((blog) => (
-          <li key={blog.id} className="border p-4 mt-5 flex justify-between rounded-lg bg-white-900/30 shadow-lg shadow-black">
+          <li key={blog.id} className="border p-4 mt-5 flex justify-between rounded-lg bg-white shadow-lg shadow-black">
             <img
                   src={blog.imageUrl}
                   alt={blog.title}

@@ -10,7 +10,7 @@
     "lint": "next lint",
     "seed": "node prisma/seed.js"
   },
-  "prisma":{
+  "prisma": {
     "seed": "node prisma/seed.js"
   },
   "dependencies": {
@@ -38,6 +38,7 @@
     "react-google-recaptcha-v2": "^3.0.0-alpha.1",
     "react-hook-form": "^7.54.2",
     "react-hot-toast": "^2.5.2",
+    "react-modal": "^3.16.3",
     "react-redux": "^9.2.0",
     "react-toastify": "^11.0.5",
     "sib-api-v3-sdk": "^8.5.0",

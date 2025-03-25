@@ -8,9 +8,20 @@ import { Plus } from 'lucide-react';
 export default function BlogList() {
   const [blogs, setBlogs] = useState([]);
 
-  useEffect(() => {
-    axios.get('/api/blog').then((response) => setBlogs(response.data));
-  }, []);
+  useEffect(()=>{
+    const fetchBlog = async() =>{
+      try{
+        const response = await axios.get(`/api/blog`);
+        const res = response.data;
+        setBlogs(res);
+        console.log(res);
+      }
+      catch(err){
+        console.error("Error fetching blogs:",err);
+      }
+    }
+    fetchBlog();
+  },[])
 
   return (
     <div className="max-w-5xl mx-auto py-10 px-4">

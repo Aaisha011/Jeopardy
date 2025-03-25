@@ -103,7 +103,7 @@ export default function AdminDashboard() {
           </li>
           <li className="px-4 py-2 flex items-center text-white hover:bg-purple-300 cursor-pointer">
             <Plus className="mr-2" /> 
-            <Link href={'/auth/store/createProducts'}>Add Product</Link>
+            <Link href={'/auth/store/createProduct'}>Add Product</Link>
           </li>
           <li className="px-4 py-2 flex items-center text-white hover:bg-purple-300 cursor-pointer">
             <ListFilterIcon className="mr-2" /> 

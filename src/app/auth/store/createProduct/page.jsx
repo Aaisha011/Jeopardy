@@ -6,6 +6,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import Sidebar from "@/components/Sidebar";
 
 export default function Products() {
   const [categories, setCategories] = useState([]);
@@ -81,7 +82,7 @@ export default function Products() {
       toast.success("Product added successfully!");
       reset();
       document.getElementById("image").value = "";
-      router.push("/auth/adm")
+      router.push("/auth/store/productList");
     } catch (error) {
       const errorMessage = error.response?.data?.error || error.message;
       toast.error(`Failed to add product: ${errorMessage}`);
@@ -92,8 +93,13 @@ export default function Products() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-t from-gray-200 to-purple-600 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-r from-gray-300 to-purple-600 dark:bg-gray-900 ">
       <ToastContainer position="top-right" autoClose={3000} />
+      <div className="flex flex-row">
+      {/* Sidebar */}
+      <div className="w-64 bg-purple-500 text-white shadow-md flex flex-col h-screen fixed left-0 top-0">
+        <Sidebar />
+      </div>
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
           <h1 className="text-3xl font-bold text-center text-purple-900 mb-6">
@@ -303,6 +309,7 @@ export default function Products() {
           </form>
         </div>
       </div>
+    </div>
     </div>
   );
 }

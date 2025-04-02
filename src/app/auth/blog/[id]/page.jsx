@@ -4,12 +4,15 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function BlogDetail() {
   const { id } = useParams(); // Get blog ID from URL
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (!id) return;
@@ -28,16 +31,23 @@ export default function BlogDetail() {
     fetchBlog();
   }, [id]);
 
+  const handleBack = async() =>{
+    router.push("/auth/blog");
+  }
+
   if (loading) return <p className="text-center text-gray-500">Loading...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
-    <div className="max-w-3xl mx-auto py-10 px-4">
+    <div className="max-w-3xl mx-auto py-10 px-4 mt-11 cursor-pointer">
+      <button onClick={handleBack}>
+        <ArrowLeft/>
+      </button>
       <h1 className="text-3xl font-bold mt-6 mb-6">{blog.title}</h1>
       <img
         src={blog.imageUrl}
         alt={blog.title}
-        className="w-full h-64 object-cover rounded-lg shadow-md"
+        className="w-72 h-72 object-cover rounded-lg shadow-md "
       />
       <span className="mt-4 inline-block bg-blue-100 text-blue-600 text-sm font-medium px-3 py-1 rounded-full">
         {blog.category?.name || "Uncategorized"}

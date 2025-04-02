@@ -75,35 +75,35 @@ export default function UserDashboard() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-t from-gray-300 to-purple-600">
-        <h1 className="text-white text-2xl font-bold">Loading your dashboard...</h1>
+        <h1 className="text-white text-2xl font-bold">Loading your leaderBoard...</h1>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-t from-gray-300 to-purple-600 flex flex-col items-center py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-t from-gray-300 to-purple-600 flex flex-col items-center py-8 ">
       <ToastContainer position="top-right" autoClose={3000} />
       {/* User Info Section */}
 
-      <div className="flex flex-row gap-7 text-white">
+      {/* <div className="flex flex-row gap-7 text-white">
         <div className="bg-white/50 rounded-lg shadow-lg p-6 w-full max-w-md mb-8 text-center">
         <h2 className="text-2xl font-bold text-black">Welcome, {user?.name || "Guest"}!</h2>
         <p className="text-lg text-gray-700">
           <strong>Email:</strong> {user?.email || "Not available"}
         </p>
-        </div>
+        </div> */}
 
         {/* User Scores Section */}
-        <div className="bg-white/50 rounded-lg shadow-lg p-6 w-full max-w-md   mb-8">
+        {/* <div className="bg-white/50 rounded-lg shadow-lg p-6 w-full max-w-md   mb-8">
         <h3 className="text-xl font-bold mb-4">Your Total Score</h3>
         <p className="text-gray-700 text-lg font-semibold">
           {totalScore > 0 ? `${totalScore} points` : "No scores available yet. Play a game to see your score!"}
         </p>
         </div>
-      </div>
+      </div> */}
 
       {/* Leaderboard Section */}
-      <div className="bg-white/5 rounded-lg shadow-lg shadow-whit p-6 w-full max-w-md mb-8">
+      <div className="bg-white/20 rounded-lg shadow-lg shadow-white p-3 w-full max-w-4xl mb-8">
         <h3 className="text-xl font-bold mb-4 text-center">Leaderboard</h3>
         {leaderboard.length > 0 ? (
           <table className="w-full border-collapse border border-gray-300">

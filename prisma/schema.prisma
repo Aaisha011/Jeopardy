@@ -8,19 +8,22 @@ datasource db {
 }
 
 model User {
-  id                String    @id @default(uuid())
-  email             String    @unique
+  id                String     @id @default(uuid())
+  email             String     @unique
   name              String?
-  createdAt         DateTime  @default(now())
+  createdAt         DateTime   @default(now())
   password          String
-  updatedAt         DateTime  @updatedAt
+  updatedAt         DateTime   @updatedAt
   role              String
   resetToken        String?
   resetTokenExpires DateTime?
   scores            Score[]
-  subscriptionType  String    @default("free")     // free, 1month, 6months, lifetime
-  subscriptionEnd   DateTime?                      // Nullable for free/lifetime users
-  cartItems         CartItem[]                    // Relation to cart
+  subscriptionType  String     @default("free") // free, oneMonth, sixMonth, lifetime
+  subscriptionEnd   DateTime?
+  accounts          Account[]
+  sessions          Session[] // Nullable for free/lifetime users
+  cartItems         CartItem[] // Relation to cart
+  purchases         Purchase[] // New relation to Purchase model
 }
 
 model Score {
@@ -32,31 +35,43 @@ model Score {
 }
 
 model productCategory {
-  id          String    @id @default(uuid())
-  name        String    @unique
+  id       String    @id @default(uuid())
+  name     String    @unique
   // description String?   // Keeping this optional field from earlier
-  products    Product[] // One-to-many relation with Product
+  products Product[] // One-to-many relation with Product
 }
 
 model Product {
-  id            String          @id @default(uuid())
-  name          String
-  description   String?
-  type          String          // physical, digital
-  basicPrice    Int             // Price for basic access (e.g., one-time purchase)
-  oneMonth      Int             // Price for 1-month access
-  sixMonth      Int             // Price for 6-month access
-  lifeTime      Int             // Price for lifetime access
-  imageUrl      String          // URL of the image in Supabase Storage
-  categoryId    String          // Foreign key to productCategory
-  category      productCategory @relation(fields: [categoryId], references: [id])
-  cartItems     CartItem[]      // One-to-many relation with CartItem
+  id          String          @id @default(uuid())
+  name        String
+  description String?
+  type        String // physical, digital
+  basicPrice  Int // Price for basic access (e.g., one-time purchase)
+  oneMonth    Int // Price for 1-month access
+  sixMonth    Int // Price for 6-month access
+  lifeTime    Int // Price for lifetime access
+  imageUrl    String // URL of the image in Supabase Storage
+  categoryId  String // Foreign key to productCategory
+  category    productCategory @relation(fields: [categoryId], references: [id])
+  cartItems   CartItem[] // One-to-many relation with CartItem
+  purchases   Purchase[]      // New relation to Purchase model
+}
+
+model Purchase {
+  id          String   @id @default(uuid())
+  userId      String
+  productId   String
+  price       Int      // Actual price paid in points at purchase time
+  purchasedAt DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model CartItem {
   id        String   @id @default(uuid())
   userId    String
   productId String
+  price     Int // Price at the time of adding to cart, based on user type
   quantity  Int      @default(1)
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
@@ -64,9 +79,9 @@ model CartItem {
 }
 
 model SubscriptionPricing {
-  id              String  @id @default(uuid())
-  subscriptionType String  @unique
-  monthlyCost     Int
+  id               String @id @default(uuid())
+  subscriptionType String @unique
+  monthlyCost      Int
 }
 
 model Blog {
@@ -102,4 +117,30 @@ model questionCategory {
   name      String     @unique
   createdAt DateTime   @default(now())
   questions Question[]
+}
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

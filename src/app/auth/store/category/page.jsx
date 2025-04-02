@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast,ToastContainer } from "react-toastify";
+import Sidebar from "@/components/Sidebar";
 
 export default function ProductCategory() {
   const router = useRouter();
@@ -71,8 +72,9 @@ export default function ProductCategory() {
   };
 
   return (
-    <div className="flex items-center h-screen bg-gradient-to-r from-purple-600 to-purple-300">
+    <div className="flex items-center h-screen bg-gradient-to-r from-gray-300 to-purple-600 dark:bg-gray-900">
       <ToastContainer position="top-right" autoClose={3000} />
+      <Sidebar/>
       <div className="max-w-md mx-auto bg-white shadow-lg rounded-lg p-7">
         <h2 className="text-2xl font-bold mb-4 text-purple-900 text-center">Manage Product Categories</h2>
 

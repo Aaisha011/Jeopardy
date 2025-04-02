@@ -135,6 +135,7 @@ export const authOptions = {
       if (user) {
         token.id = user.id;
         token.role = user.role;
+        token.subscriptionType = user.subscriptionType;
       }
       return token;
     },
@@ -142,6 +143,7 @@ export const authOptions = {
       if (token) {
         session.user.id = token.id;
         session.user.role = token.role;
+        session.user.subscriptionType = token.subscriptionType;
       }
       return session;
     },

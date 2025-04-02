@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import Sidebar from "@/components/Sidebar";
 
 export default function CategoryComponent() {
 
@@ -65,7 +66,11 @@ export default function CategoryComponent() {
   };
 
   return (
-    <div className="flex items-center h-screen bg-gradient-to-r from-purple-600 to-purple-300">
+    <div className="flex items-center h-screen  bg-gradient-to-r from-gray-300 to-purple-600 dark:bg-gray-900">
+      {/* Sidebar */}
+    <div className="w-64 bg-purple-500 text-white shadow-md flex flex-col h-full">
+      <Sidebar />
+    </div>
       <div className="max-w-md mx-auto bg-white shadow-lg rounded-lg p-7">
       <h2 className="text-2xl font-bold mb-4 text-purple-900 text-center">Manage Blog Categories</h2>
 

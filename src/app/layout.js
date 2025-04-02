@@ -7,6 +7,9 @@ import { SessionProvider } from "next-auth/react";
 // import AuthProvider from "@/component/authProvider/AuthProvider";
 import SessionWrapper from "@/components/SessionWrapper";
 
+import { CartProvider } from "@/context/cartContext";
+import { ToastContainer } from "react-toastify";
+
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
 //   subsets: ["latin"],
@@ -29,10 +32,12 @@ export default function RootLayout({ children }) {
         // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
       <SessionWrapper>
-
+        <CartProvider>
+          {/* <Navbar/> */}
         <Provider store={store}>
           {children}
         </Provider>
+        </CartProvider>
         </SessionWrapper>
 
 

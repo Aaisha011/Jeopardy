@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useRouter } from "next/navigation";
 import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
+import Sidebar from './Sidebar';
 
 export default function CreateBlog() {
   const router = useRouter();
@@ -50,12 +51,16 @@ export default function CreateBlog() {
   };
 
   return (
-    <div className='h-screen bg-gradient-to-r from-purple-600 to-gray-300'>
+    <div className='h-screen bg-gradient-to-r from-gray-300 to-purple-600 dark:bg-gray-900'>
       <ToastContainer position="top-right" autoClose={3000} />
-
-      <form onSubmit={handleSubmit} className="max-w-lg mx-auto bg-white shadow-lg shadow-black rounded-lg p-7 space-y-3.5">
+      <div className='flex flex-row'> 
+      {/* Sidebar */}
+      <div className="w-64 bg-purple-500 text-white shadow-md flex flex-col h-screen fixed left-0 top-0">
+        <Sidebar />
+      </div>
+      <form onSubmit={handleSubmit} className="max-w-xl mx-auto bg-white shadow-lg shadow-black rounded-lg p-11 space-y-3.5 p-7">
         <div>
-        <h1 className='text-center p-5 text-purple-900 font-bold text-3xl'>Create Blog Form</h1>
+        <h1 className='text-center p-3 text-purple-900 font-bold text-3xl'>Create Blog Form</h1>
 
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">Title</label>
           <input id="title" type="text" placeholder="Enter blog title" value={formData.title}
@@ -94,7 +99,9 @@ export default function CreateBlog() {
         <div>
           <button type="submit" className="w-full bg-blue-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-600 cursor-pointer">Create Blog</button>
         </div>
+        
       </form>
+      </div>
     </div>
   );
 } 

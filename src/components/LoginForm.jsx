@@ -49,10 +49,11 @@ export default function LoginForm() {
       
       const id = session.user.id; // Make sure your NextAuth callbacks include this field
       const role = session.user.role; // Ensure that the role is added via callbacks
+      const type = session.user.subscriptionType;
 
       console.log("User ID:", id);
       console.log("User Role:", role);
-
+      console.log("User Type:", type);
       let redirectUrl = '/auth/board';
       if (role === 'admin') {
         redirectUrl = '/auth/admin';

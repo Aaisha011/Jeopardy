@@ -20,7 +20,7 @@ export async function GET(req) {
     console.log("Fetching user from database...");
     const user = await prisma.user.findUnique({
       where: { email: userEmail },
-      select: { id: true, name: true, email: true },
+      select: { id: true, name: true, email: true, subscriptionType: true, },
     });
 
     if (!user) {
